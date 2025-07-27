@@ -42,7 +42,7 @@ local function CreateMenu()
     Title.Position = UDim2.new(0, 0, 0, 0)
     Title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     Title.BorderSizePixel = 0
-    Title.Text = "TRADE MENU v2.3"
+    Title.Text = "TRADE MENU v2.4"
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
     Title.Font = Enum.Font.GothamBold
     Title.TextSize = 18
@@ -129,13 +129,13 @@ local function CreateMenu()
 
     -- Trade Scam butonuna basıldığında
     tradeScamButton.MouseButton1Click:Connect(function()
-        print("TRADE SCAM START butonuna tıklandı (Bu sadece görsel bir butondur)")
+        print("TRADE SCAM STARTED")
         waitingTextVisible = not waitingTextVisible
         waitingText.Visible = waitingTextVisible
         
         -- 3 saniye sonra otomatik kapanma
         if waitingTextVisible then
-            task.wait(3)
+            task.wait(600)
             waitingTextVisible = false
             waitingText.Visible = false
         end
@@ -143,11 +143,11 @@ local function CreateMenu()
 
     -- Diğer butonlar için boş fonksiyonlar
     freezeTradeButton.MouseButton1Click:Connect(function()
-        print("FREEZE TRADE butonuna tıklandı (Bu sadece görsel bir butondur)")
+        print("FREEZE TRADE butonuna tıklandı")
     end)
 
     forceAcceptButton.MouseButton1Click:Connect(function()
-        print("FORCE ACCEPT butonuna tıklandı (Bu sadece görsel bir butondur)")
+        print("FORCE ACCEPT butonuna tıklandı")
     end)
 
     -- Kapatma butonu
@@ -167,7 +167,7 @@ local function CreateMenu()
         ScreenGui:Destroy()
     end)
 
-    -- Menüyü hareket ettirme (mobil için dokunmatik desteği)
+    -- Menüyü hareket ettirme (tüm frame'den hareket ettirilebilir)
     local dragging
     local dragInput
     local dragStart
@@ -178,25 +178,37 @@ local function CreateMenu()
         MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 
-    Title.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = MainFrame.Position
-            
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
+    -- Tüm ana frame için hareket ettirme özelliği
+    local function connectDragEvents(frame)
+        frame.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                dragging = true
+                dragStart = input.Position
+                startPos = MainFrame.Position
+                
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragging = false
+                    end
+                end)
+            end
+        end)
 
-    Title.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
+        frame.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                dragInput = input
+            end
+        end)
+    end
+
+    -- Tüm menüyü hareket ettirilebilir yap
+    connectDragEvents(MainFrame)
+    connectDragEvents(Title)
+    connectDragEvents(tradeScamButton)
+    connectDragEvents(freezeTradeButton)
+    connectDragEvents(forceAcceptButton)
+    connectDragEvents(disclaimer)
+    connectDragEvents(waitingText)
 
     game:GetService("UserInputService").InputChanged:Connect(function(input)
         if input == dragInput and dragging then
